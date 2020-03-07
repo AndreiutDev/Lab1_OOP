@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <iostream>
+#include <assert.h>
+/*2.
+a. Generieren Sie die ersten n Primzahlen (n ist eine gegebene natürliche Zahl).
+b. Gegeben sei eine Reihe von Zahlen, finden Sie die längste zusammenhängende Teilfolge
+so, dass alle zwei beliebige aufeinanderfolgende Elemente relativ prim sind.*/
+
+int prim(int x)		//verificare nr prim
+{
+	int d;
+	if (x < 2)
+		return 0;
+	for (d = 2; d <= x / 2; d++)
+		if (x % d == 0)
+			return 0;
+	return 1;
+}
+
+int cmmdc(int a, int b) 
+{
+	while (a != b)
+		if (a < b)
+			b = b - a;
+		else
+			a = a - b;
+	return a;
+}
+
+void numereprime(int n)		//se afiseaza primele n numere prime
+{	
+	std::cout << "Die ersten " << n << " Primzahlen sind:\n";
+	int ctprime = 0, x = 2;
+	while (ctprime != n)		//cat timp nu se gasesc n numere prime
+	{
+		if (prim(x) == 1)
+		{
+			std::cout << x << " ";
+			ctprime++;
+		}
+		x++;
+	}
+}	
+
+void lansgteprimeteilfolge(int v[], int vlen, int &ctmaxstart, int &ctmax)	//afiseaza cel mai lung subsir cu elemente prime intre ele
+{
+	int i;
+	int currentlength;
+	int start;
+	int steps;
+	for ( i = 0; i < vlen - 1; i++)		//se parcurg elementele listei
+	{
+		currentlength = 1;
+		start = i;
+		steps = i;
+		while (cmmdc(v[steps],v[steps + 1]) == 1 )		//daca cmmdc-ul lor este 1, sunt prime intre ele
+		{
+			currentlength++;
+			steps++;
+		}
+		if (currentlength > ctmax)
+		{
+			ctmax = currentlength;
+			ctmaxstart = start;
+		}
+	}
+	std::cout << "Lansgte 'prime' Teilfolge ist: \n";
+	int ctmax2 = ctmax;		// se copiaza ctmax
+	int ctmaxstart2 = ctmaxstart;		//se copiaza ctmaxstart
+	while (ctmax2 != 0)		//se afiseaza subsirul de elemente prime
+	{
+		std::cout << v[ctmaxstart2] << " ";
+		ctmaxstart2++;
+		ctmax2--;
+	}
+}
+
+void unittests()
+{	//test prim
+	assert(prim(2) == 1);
+	assert(prim(23) == 1);
+	assert(prim(0) == 0);
+	assert(prim(100) == 0);
+	assert(prim(19) == 1);
+	assert(prim(88) == 0);
+
+	//test cmmdc
+	assert(cmmdc(10, 100) == 10);
+	assert(cmmdc(11, 44) == 11);
+	assert(cmmdc(13, 27) == 1);
+	
+	// test lansgteprimeteilfolge
+	int v[20] = { 3, 4, 7, 19,23, 5, 5, 11, 4, 6, 7, 9, 2, 5, 7, 14 };
+	int ctmax = 1;
+	int ctmaxstart = 0;
+	lansgteprimeteilfolge(v, 16, ctmax, ctmaxstart);
+	// sf test
+
+	std::cout << "\n";
+	numereprime(10);
+} 
+
+int main()
+{
+	unittests();
+}
